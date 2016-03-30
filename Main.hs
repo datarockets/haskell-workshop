@@ -17,6 +17,7 @@ import Data.Conduit
 import qualified Data.Conduit.Binary as CB
 import qualified Data.Conduit.List as CL
 
+import Cluster
 
 -- =====  parsing =====
 
@@ -41,6 +42,6 @@ main = do
   let csvOpts = defCSVSettings {csvSep = ',', csvQuoteChar = Nothing}
   input <- handleAll (\e -> error $ "Cannot read input file: " ++ show e ) $ runResourceT $ readCSVFile csvOpts "example.txt"
 
-  let result = convertFromCsv input
+  let result = startClusterization 2 $ convertFromCsv input
 
   runResourceT $ CL.sourceList (convertToCsv result) $$ CB.sinkIOHandle $ return stdout
